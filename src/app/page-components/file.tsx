@@ -25,7 +25,12 @@ export const FilePage = observer(function File({ params }: Props) {
     const videoRef = useRef<HTMLVideoElement>(null)
 
     const setMaxTime = useCallback((max: number) => {
-        setTime((prev) => ({ ...prev, max }))
+        setTime((prev) => {
+            if (prev.max == max) {
+                return prev
+            }
+            return { ...prev, max }
+        })
     }, [])
 
     useEffect(() => {
@@ -35,7 +40,12 @@ export const FilePage = observer(function File({ params }: Props) {
         setMaxTime(videoRef.current!.duration * 1000)
     }, [setMaxTime])
 
-    const handleChangeTime = setTime
+    const handleChangeTime = useCallback(
+        (value: ChangeRangeEvent) => {
+            setTime(value)
+        },
+        [setTime],
+    )
 
     const handleSave = useCallback(() => {
         if (!file) {
