@@ -23,6 +23,9 @@ const actions = makeActions({
     },
 })
 
+const computedFile = computedFn((id: string) => {
+    return files.get(id)
+})
 const store = {
     model: {
         files,
@@ -32,8 +35,13 @@ const store = {
         amount: computedFn(() => files.size),
         list: computedFn(() => Array.from(files.values())),
         entries: computedFn(() => Array.from(files.entries())),
-        file: computedFn((id: string) => {
-            return files.get(id)
+        file: computedFile,
+        fileUri: computedFn((id: string) => {
+            const file = computedFile(id)
+            if (file) {
+                return URL.createObjectURL(file)
+            }
+            return undefined
         }),
     },
 }

@@ -7,7 +7,6 @@ module.exports = {
                 'fade-out': 'fadeOut 300ms ease-in-out',
                 'fade-in': 'fadeIn 300ms ease-in-out',
             },
-
             keyframes: () => ({
                 fadeOut: {
                     '0%': { opacity: 1 },

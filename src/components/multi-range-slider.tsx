@@ -15,21 +15,34 @@ export type ChangeRangeEvent = {
 export type Props = {
     min: number
     max: number
+    current: {
+        min: number
+        max: number
+    }
     onChange?: (value: ChangeRangeEvent) => void
     className?: string
 }
 
-export const MultiRangeSlider = ({ min, max, onChange, className }: Props) => {
+export const MultiRangeSlider = ({
+    min,
+    max,
+    current,
+    onChange,
+    className,
+}: Props) => {
     const [minVal, setMinVal] = useState(min)
     const [maxVal, setMaxVal] = useState(max)
-    const minValRef = useRef(min)
-    const maxValRef = useRef(max)
     const rangeRef = useRef<HTMLDivElement>(null)
 
     useLayoutEffect(() => {
         setMinVal(min)
         setMaxVal(max)
     }, [min, max])
+
+    useLayoutEffect(() => {
+        setMinVal(current.min)
+        setMaxVal(current.max)
+    }, [current.min, current.max])
 
     const getPercent = useCallback(
         (value: number) => {
@@ -43,23 +56,13 @@ export const MultiRangeSlider = ({ min, max, onChange, className }: Props) => {
 
     useEffect(() => {
         const minPercent = getPercent(minVal)
-        const maxPercent = getPercent(maxValRef.current)
+        const maxPercent = getPercent(maxVal)
 
         if (rangeRef.current) {
             rangeRef.current.style.left = `${minPercent}%`
             rangeRef.current.style.width = `${maxPercent - minPercent}%`
         }
-    }, [minVal, getPercent])
-
-    // Set width of the range to decrease from the right side
-    useEffect(() => {
-        const minPercent = getPercent(minValRef.current)
-        const maxPercent = getPercent(maxVal)
-
-        if (rangeRef.current) {
-            rangeRef.current.style.width = `${maxPercent - minPercent}%`
-        }
-    }, [maxVal, getPercent])
+    }, [minVal, getPercent, maxVal])
 
     // Get min and max values when their state changes
     useEffect(() => {
@@ -84,7 +87,6 @@ export const MultiRangeSlider = ({ min, max, onChange, className }: Props) => {
                             maxVal - 1,
                         )
                         setMinVal(value)
-                        minValRef.current = value
                     }}
                     className="thumb thumb--left"
                     style={{ zIndex: minVal > max - 100 ? 5 : undefined }}
@@ -100,7 +102,6 @@ export const MultiRangeSlider = ({ min, max, onChange, className }: Props) => {
                             minVal + 1,
                         )
                         setMaxVal(value)
-                        maxValRef.current = value
                     }}
                     className="thumb thumb--right"
                 />
